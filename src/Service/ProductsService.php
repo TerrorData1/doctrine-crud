@@ -65,24 +65,42 @@ class ProductsService
     {
         $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
 
-        if ($existingProduct) {
-            if ($product->getName() !== null) {
-                $existingProduct->setName($product->getName());
-            }
-            if ($product->getPrice() !== null) {
-                $existingProduct->setPrice($product->getPrice());
-            }
-            if ($product->getDescription() !== null) {
-                $existingProduct->setDescription($product->getDescription());
-            }
-
-            $this->entityManager->flush();
-
-            return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
-        } else {
+        if (!$existingProduct) {
             return "Le produit avec l'ID {$id} n'existe pas.";
         }
+
+        // Récupérer les valeurs de tous les champs du produit envoyé
+        $updatedName = $product->getName();
+        $updatedPrice = $product->getPrice();
+        $updatedDescription = $product->getDescription();
+
+        // Mettre à jour uniquement les champs qui sont définis dans la requête
+        if ($updatedName !== null) {
+            $existingProduct->setName($updatedName);
+        }
+
+        if ($updatedPrice !== null) {
+            // Vérifiez d'abord si $updatedPrice est une valeur numérique
+            if (is_numeric($updatedPrice)) {
+                $existingProduct->setPrice((float)$updatedPrice);
+            } else {
+                // Si ce n'est pas le cas, vous pouvez gérer l'erreur ou attribuer une valeur par défaut
+                // Dans cet exemple, je vais simplement attribuer 0 comme prix par défaut
+                $existingProduct->setPrice(0.0);
+            }
+        }
+
+        if ($updatedDescription !== null) {
+            $existingProduct->setDescription($updatedDescription);
+        }
+
+        $this->entityManager->flush();
+
+        return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
     }
+
+
+
 
     public function deleteProduct(Product $product): void
     {

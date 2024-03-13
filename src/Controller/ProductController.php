@@ -50,7 +50,7 @@ class ProductController extends AbstractController
     #[Route('/api/products/{id}', methods: ['PATCH'])]
     public function patchProduct(int $id, #[MapRequestPayload] Product $product): Response
     {
-        $message = $this->productsService->putProduct($id, $product);
+        $message = $this->productsService->patchProduct($id, $product);
         return new Response($message);
     }
 
