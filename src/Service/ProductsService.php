@@ -61,6 +61,45 @@ class ProductsService
         }
     }
 
+
+    // methode if
+    // public function patchProduct(int $id, Product $product): string
+    // {
+    //     $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
+
+    //     if (!$existingProduct) {
+    //         return "Le produit avec l'ID {$id} n'existe pas.";
+    //     }
+    // Récupérer les valeurs de tous les champs du produit envoyé
+    // $updatedName = $product->getName();
+    // $updatedPrice = $product->getPrice();
+    // $updatedDescription = $product->getDescription();
+    // Mettre à jour uniquement les champs qui sont définis dans la requête
+    // if ($updatedName !== null) {
+    //     $existingProduct->setName($updatedName);
+    // }
+    // if ($updatedPrice !== null) {
+    // Vérifiez d'abord si $updatedPrice est une valeur numérique
+    // if (is_numeric($updatedPrice)) {
+    //     $existingProduct->setPrice((float)$updatedPrice);
+    // } else {
+    // Si ce n'est pas le cas, vous pouvez gérer l'erreur ou attribuer une valeur par défaut
+    // Dans cet exemple, je vais simplement attribuer 0 comme prix par défaut
+    //             $existingProduct->setPrice(0.0);
+    //         }
+    //     }
+    //     if ($updatedDescription !== null) {
+    //         $existingProduct->setDescription($updatedDescription);
+    //     }
+
+    //     $this->entityManager->flush();
+
+    //     return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+    // }
+
+
+
+    // méthode foreach -->
     public function patchProduct(int $id, Product $product): string
     {
         $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
@@ -70,36 +109,32 @@ class ProductsService
         }
 
         // Récupérer les valeurs de tous les champs du produit envoyé
-        $updatedName = $product->getName();
-        $updatedPrice = $product->getPrice();
-        $updatedDescription = $product->getDescription();
+        $updatedFields = [
+            'name' => $product->getName(),
+            'price' => $product->getPrice(),
+            'description' => $product->getDescription()
+        ];
 
         // Mettre à jour uniquement les champs qui sont définis dans la requête
-        if ($updatedName !== null) {
-            $existingProduct->setName($updatedName);
-        }
-
-        if ($updatedPrice !== null) {
-            // Vérifiez d'abord si $updatedPrice est une valeur numérique
-            if (is_numeric($updatedPrice)) {
-                $existingProduct->setPrice((float)$updatedPrice);
-            } else {
-                // Si ce n'est pas le cas, vous pouvez gérer l'erreur ou attribuer une valeur par défaut
-                // Dans cet exemple, je vais simplement attribuer 0 comme prix par défaut
-                $existingProduct->setPrice(0.0);
+        foreach ($updatedFields as $field => $value) {
+            // Vérifier si le champ est défini dans la requête et s'il n'est pas null
+            if ($value !== null) {
+                // Si le champ est price, vérifiez d'abord s'il est numérique
+                if ($field === 'price' && !is_numeric($value)) {
+                    // Si le prix n'est pas numérique, attribuez une valeur par défaut
+                    $existingProduct->setPrice(0.0);
+                } else {
+                    // Sinon, mettez à jour le champ dans le produit existant
+                    $setter = 'set' . ucfirst($field);
+                    $existingProduct->$setter($value);
+                }
             }
-        }
-
-        if ($updatedDescription !== null) {
-            $existingProduct->setDescription($updatedDescription);
         }
 
         $this->entityManager->flush();
 
         return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
     }
-
-
 
 
     public function deleteProduct(Product $product): void
