@@ -61,8 +61,7 @@ class ProductsService
         }
     }
 
-
-    // methode if
+    // patch avec methode if -->
     // public function patchProduct(int $id, Product $product): string
     // {
     //     $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
@@ -91,15 +90,11 @@ class ProductsService
     //     if ($updatedDescription !== null) {
     //         $existingProduct->setDescription($updatedDescription);
     //     }
-
     //     $this->entityManager->flush();
-
     //     return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
     // }
 
-
-
-    // méthode foreach -->
+    // patch avec methode foreach -->
     public function patchProduct(int $id, Product $product): string
     {
         $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
@@ -107,7 +102,6 @@ class ProductsService
         if (!$existingProduct) {
             return "Le produit avec l'ID {$id} n'existe pas.";
         }
-
         // Récupérer les valeurs de tous les champs du produit envoyé
         $updatedFields = [
             'name' => $product->getName(),
@@ -130,12 +124,9 @@ class ProductsService
                 }
             }
         }
-
         $this->entityManager->flush();
-
         return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
     }
-
 
     public function deleteProduct(Product $product): void
     {
