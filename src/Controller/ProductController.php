@@ -40,10 +40,18 @@ class ProductController extends AbstractController
         return new Response($this->serializer->serialize($this->productsService->getProductById($id), 'json'));
     }
 
-    #[Route('/api/products/{id}', methods: ['PATCH'])]
-    public function updateProduct(int $id, #[MapRequestPayload] Product $product): Response
+    #[Route('/api/products/{id}', methods: ['PUT'])]
+    public function putProduct(int $id, #[MapRequestPayload] Product $product): Response
     {
-        return new Response($this->serializer->serialize($this->productsService->updateProduct($product), 'json'));
+        $message = $this->productsService->putProduct($id, $product);
+        return new Response($message);
+    }
+
+    #[Route('/api/products/{id}', methods: ['PATCH'])]
+    public function patchProduct(int $id, #[MapRequestPayload] Product $product): Response
+    {
+        $message = $this->productsService->putProduct($id, $product);
+        return new Response($message);
     }
 
     #[Route('/api/products/{id}', methods: ['DELETE'])]

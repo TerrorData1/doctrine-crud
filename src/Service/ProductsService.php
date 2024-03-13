@@ -43,11 +43,45 @@ class ProductsService
         return $this->entityManager->getRepository(Product::class)->find($id);
     }
 
-    public function updateProduct(Product $product): Product
+    public function putProduct(int $id, Product $product): string
     {
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
-        return $product;
+        $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
+
+        if ($existingProduct) {
+            $existingProduct
+                ->setName($product->getName())
+                ->setPrice($product->getPrice())
+                ->setDescription($product->getDescription());
+
+            $this->entityManager->flush();
+
+            return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+        } else {
+            return "Le produit avec l'ID {$id} n'existe pas.";
+        }
+    }
+
+    public function patchProduct(int $id, Product $product): string
+    {
+        $existingProduct = $this->entityManager->getRepository(Product::class)->find($id);
+
+        if ($existingProduct) {
+            if ($product->getName() !== null) {
+                $existingProduct->setName($product->getName());
+            }
+            if ($product->getPrice() !== null) {
+                $existingProduct->setPrice($product->getPrice());
+            }
+            if ($product->getDescription() !== null) {
+                $existingProduct->setDescription($product->getDescription());
+            }
+
+            $this->entityManager->flush();
+
+            return "Le produit avec l'ID {$id} a été mis à jour avec succès !";
+        } else {
+            return "Le produit avec l'ID {$id} n'existe pas.";
+        }
     }
 
     public function deleteProduct(Product $product): void
